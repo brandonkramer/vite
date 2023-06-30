@@ -38,7 +38,7 @@ export default function (userPath: string, userOptions?: Partial<RollupCopyAsset
                         if (!(asset in assets)) {
                             assets[asset] = [];
                         }
-                        (assets[asset] = [...assets[asset], ...fg.sync(path.resolve(assetFolder, asset + '/**/*'))])
+                        (assets[asset] = [...assets[asset], ...fg.sync(path.resolve(assetFolder, asset, '**/*'))])
                     }
                 }
 

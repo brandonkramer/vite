@@ -33,7 +33,7 @@ export default function (userOptions?: Partial<RollupEmptyDirsOptions>): PluginO
                         fs.rmSync(dirPath, {recursive: true});
                         console.log('deleted ' + dirPath)
                     }
-                })(path.resolve(path.resolve(options.dirname, options.buildPath), dir))
+                })(path.resolve(options.dirname, options.buildPath, dir))
             }
         },
     };

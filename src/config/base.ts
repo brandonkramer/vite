@@ -1,9 +1,13 @@
 import * as esbuild from "esbuild";
+import fg from "fast-glob";
+import path from "path";
 
 interface WPStrapViteConfigCore {
     root: string;
     isDev: boolean;
+    entry: string,
     outDir: string;
+    dirname: string
 }
 
 interface WPStrapViteConfigServerOptions {
@@ -86,6 +90,7 @@ export default (core: WPStrapViteConfigCore) => ({
 
         /* RollupJS options */
         rollupOptions: {
+            input: fg.sync(path.resolve(core.dirname, core.root, '../', core.root, '**/', core.entry, 'js/*')),
             output: {
                 entryFileNames: (assetInfo: any) => 'js/[name].[hash].js',
                 assetFileNames: (assetInfo: any) => {

@@ -1,22 +1,40 @@
+import type {PluginOption} from 'vite'
 import fg from "fast-glob";
 import path from "path";
 import fs from "fs";
 
-export default function rollupCopyAssetFiles(
-    resolvePath,
-    testRules = {
+export interface Config {
+    dirname: string,
+    path: string,
+    testRules: {
+        [key: string]: RegExp;
+    };
+}
+
+const DEFAULT_CONFIG: Config = {
+    dirname: '',
+    path: '',
+    testRules: {
         images: /png|jpe?g|svg|gif|tiff|bmp|ico/i,
         svg: /png|jpe?g|svg|gif|tiff|bmp|ico/i,
         fonts: /ttf|woff|woff2/i
-    }) {
+    }
+};
+
+export default function (userConfig?: Partial<Config>): PluginOption {
+    const config = {
+        ...DEFAULT_CONFIG,
+        ...userConfig
+    };
+
     return {
-        name: 'viteCopyAssetFiles',
+        name: 'rollup-copy-asset-files',
         async buildStart() {
 
             /** Collect assets */
-            const collectAssets = (assets = {}) => {
-                for (const assetFolder of fg.sync(path.resolve(resolvePath.dirname, resolvePath.path), {onlyFiles: false})) {
-                    for (const [asset, test] of Object.entries(testRules)) {
+            const collectAssets = (assets: Record<string, string[]> = {}) => {
+                for (const assetFolder of fg.sync(path.resolve(config.dirname, config.path), {onlyFiles: false})) {
+                    for (const [asset, test] of Object.entries(config.testRules)) {
                         if (!(asset in assets)) {
                             assets[asset] = [];
                         }
@@ -38,7 +56,7 @@ export default function rollupCopyAssetFiles(
                     }
 
 
-                    if (testRules[type] !== false && testRules[type].test(fileExt)) {
+                    if ( config.testRules[type].test(fileExt)) {
 
                         this.emitFile({
                             type: 'asset',
@@ -49,5 +67,5 @@ export default function rollupCopyAssetFiles(
                 })
             }
         }
-    }
+    };
 }

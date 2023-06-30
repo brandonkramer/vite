@@ -3,31 +3,24 @@ import fg from "fast-glob";
 import path from "path";
 import fs from "fs";
 
-export interface RollupCopyAssetFilesOptions {
-    dirname: string,
-    path: string,
-    testRules: {
-        [key: string]: RegExp;
-    };
+export interface RollupCopyAssetFilesTestRules {
+    [key: string]: RegExp;
 }
 
 /**
  * A custom RollUpJS plugin which will emit all our asset files
  *
- * @param userOptions
+ * @param userPath
+ * @param userTestRules
  */
-export default function (userOptions?: Partial<RollupCopyAssetFilesOptions>): PluginOption {
-    const options = {
+export default function (userPath: string, userTestRules?: Partial<RollupCopyAssetFilesTestRules>): PluginOption {
+    const testRules = {
         ...{
-            dirname: '',
-            path: '',
-            testRules: {
-                images: /png|jpe?g|svg|gif|tiff|bmp|ico/i,
-                svg: /png|jpe?g|svg|gif|tiff|bmp|ico/i,
-                fonts: /ttf|woff|woff2/i
-            }
+            images: /png|jpe?g|svg|gif|tiff|bmp|ico/i,
+            svg: /png|jpe?g|svg|gif|tiff|bmp|ico/i,
+            fonts: /ttf|woff|woff2/i
         },
-        ...userOptions
+        ...userTestRules
     };
 
     return {
@@ -36,8 +29,8 @@ export default function (userOptions?: Partial<RollupCopyAssetFilesOptions>): Pl
 
             /** Collect assets */
             const collectAssets = (assets: Record<string, string[]> = {}) => {
-                for (const assetFolder of fg.sync(path.resolve(options.dirname, options.path), {onlyFiles: false})) {
-                    for (const [asset, test] of Object.entries(options.testRules)) {
+                for (const assetFolder of fg.sync(userPath, {onlyFiles: false})) {
+                    for (const [asset, test] of Object.entries(testRules)) {
                         if (!(asset in assets)) {
                             assets[asset] = [];
                         }
@@ -59,7 +52,7 @@ export default function (userOptions?: Partial<RollupCopyAssetFilesOptions>): Pl
                     }
 
 
-                    if (options.testRules[type].test(fileExt)) {
+                    if (testRules[type].test(fileExt)) {
 
                         this.emitFile({
                             type: 'asset',

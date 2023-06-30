@@ -28,7 +28,7 @@ export default defineConfig({
             formats: ["es", "cjs"],
         },
         rollupOptions: {
-            external: [],
+            external: ['fs', 'path', 'fg'],
             plugins: [
                 typescriptPaths({
                     preserveExtensions: true,
@@ -39,6 +39,14 @@ export default defineConfig({
                     outDir: "dist",
                 }),
             ],
+            output: {
+                globals: {
+                    fs: 'fs',
+                    'fs/promises': 'fsp',
+                    fg: 'fg',
+                    path: 'path',
+                },
+            },
         },
     },
 });

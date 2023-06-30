@@ -4,6 +4,7 @@ import path from "path";
 import fs from "fs";
 
 export interface RollupCopyAssetFilesConfig {
+    dirname: string,
     path: string,
     testRules: {
         [key: string]: RegExp;
@@ -18,6 +19,7 @@ export interface RollupCopyAssetFilesConfig {
 export default function (userRollupCopyAssetFilesConfig?: Partial<RollupCopyAssetFilesConfig>): PluginOption {
     const config = {
         ...{
+            dirname: '',
             path: '',
             testRules: {
                 images: /png|jpe?g|svg|gif|tiff|bmp|ico/i,
@@ -34,7 +36,7 @@ export default function (userRollupCopyAssetFilesConfig?: Partial<RollupCopyAsse
 
             /** Collect assets */
             const collectAssets = (assets: Record<string, string[]> = {}) => {
-                for (const assetFolder of fg.sync(config.path, {onlyFiles: false})) {
+                for (const assetFolder of fg.sync(path.resolve(config.dirname, config.path), {onlyFiles: false})) {
                     for (const [asset, test] of Object.entries(config.testRules)) {
                         if (!(asset in assets)) {
                             assets[asset] = [];

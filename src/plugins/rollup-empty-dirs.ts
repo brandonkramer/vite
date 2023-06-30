@@ -3,6 +3,7 @@ import path from "path";
 import fs from "fs";
 
 interface RollupEmptyDirsConfig {
+    dirname: string;
     buildPath: string;
     emptyDirs: string[];
 }
@@ -16,6 +17,7 @@ interface RollupEmptyDirsConfig {
 export default function (userRollupEmptyDirsConfig?: Partial<RollupEmptyDirsConfig>): PluginOption {
     const config = {
         ...{
+            dirname: '',
             buildPath: '',
             emptyDirs: ['css', 'js', 'svg', 'images', 'fonts'],
         },
@@ -31,7 +33,7 @@ export default function (userRollupEmptyDirsConfig?: Partial<RollupEmptyDirsConf
                         fs.rmSync(dirPath, {recursive: true});
                         console.log('deleted ' + dirPath)
                     }
-                })(path.resolve(config.buildPath, dir))
+                })(path.resolve(path.resolve(config.dirname, config.buildPath), dir))
             }
         },
     };

@@ -1,6 +1,6 @@
 import {FullReloadPayload, Plugin} from "vite"
 
-interface ViteHandleHotUpdateConfig extends FullReloadPayload {
+interface ViteHandleHotUpdateOptions extends FullReloadPayload {
     path: string,
 }
 
@@ -8,18 +8,18 @@ interface ViteHandleHotUpdateConfig extends FullReloadPayload {
  * A custom ViteJS plugin that will automatically recompile the assets and refresh
  * your browser when editing PHP files.
  */
-export default function (userViteHandleHotUpdateConfig?: Partial<ViteHandleHotUpdateConfig>): Plugin {
-    const config = {
+export default function (userOptions?: Partial<ViteHandleHotUpdateOptions>): Plugin {
+    const options = {
         ...{
             path: "*",
         },
-        ...userViteHandleHotUpdateConfig
+        ...userOptions
     };
     return {
         name: "php",
         handleHotUpdate({file, server}) {
             if (file.endsWith(".php")) {
-                server.ws.send({type: 'full-reload', path: config.path});
+                server.ws.send({type: 'full-reload', path: options.path});
             }
         }
     }

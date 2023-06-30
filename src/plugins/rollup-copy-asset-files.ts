@@ -3,7 +3,7 @@ import fg from "fast-glob";
 import path from "path";
 import fs from "fs";
 
-export interface RollupCopyAssetFilesConfig {
+export interface RollupCopyAssetFilesOptions {
     dirname: string,
     path: string,
     testRules: {
@@ -14,10 +14,10 @@ export interface RollupCopyAssetFilesConfig {
 /**
  * A custom RollUpJS plugin which will emit all our asset files
  *
- * @param userRollupCopyAssetFilesConfig
+ * @param userOptions
  */
-export default function (userRollupCopyAssetFilesConfig?: Partial<RollupCopyAssetFilesConfig>): PluginOption {
-    const config = {
+export default function (userOptions?: Partial<RollupCopyAssetFilesOptions>): PluginOption {
+    const options = {
         ...{
             dirname: '',
             path: '',
@@ -27,7 +27,7 @@ export default function (userRollupCopyAssetFilesConfig?: Partial<RollupCopyAsse
                 fonts: /ttf|woff|woff2/i
             }
         },
-        ...userRollupCopyAssetFilesConfig
+        ...userOptions
     };
 
     return {
@@ -36,8 +36,8 @@ export default function (userRollupCopyAssetFilesConfig?: Partial<RollupCopyAsse
 
             /** Collect assets */
             const collectAssets = (assets: Record<string, string[]> = {}) => {
-                for (const assetFolder of fg.sync(path.resolve(config.dirname, config.path), {onlyFiles: false})) {
-                    for (const [asset, test] of Object.entries(config.testRules)) {
+                for (const assetFolder of fg.sync(path.resolve(options.dirname, options.path), {onlyFiles: false})) {
+                    for (const [asset, test] of Object.entries(options.testRules)) {
                         if (!(asset in assets)) {
                             assets[asset] = [];
                         }
@@ -59,7 +59,7 @@ export default function (userRollupCopyAssetFilesConfig?: Partial<RollupCopyAsse
                     }
 
 
-                    if (config.testRules[type].test(fileExt)) {
+                    if (options.testRules[type].test(fileExt)) {
 
                         this.emitFile({
                             type: 'asset',

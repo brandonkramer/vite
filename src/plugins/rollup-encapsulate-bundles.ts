@@ -1,6 +1,6 @@
 import type {Plugin} from 'vite';
 
-export interface RollupEncapsulateBundlesConfig {
+export interface RollupEncapsulateBundlesOptions {
     banner: string,
     footer: string
 }
@@ -8,24 +8,24 @@ export interface RollupEncapsulateBundlesConfig {
 /**
  * A custom RollUpJS plugin that encapsulate bundles
  *
- * @param userRollupEncapsulateBundlesConfig
+ * @param userOptions
  */
-export default function (userRollupEncapsulateBundlesConfig?: Partial<RollupEncapsulateBundlesConfig>): Plugin {
-    const config = {
+export default function (userOptions?: Partial<RollupEncapsulateBundlesOptions>): Plugin {
+    const options = {
         ...{
             banner: '(function(){',
             footer: '})();'
         },
-        ...userRollupEncapsulateBundlesConfig
+        ...userOptions
     };
     return {
         name: 'rollup-encapsulate-bundles',
-        generateBundle(options, bundle) {
+        generateBundle(bundleOptions, bundle) {
 
             for (const module of Object.values(bundle)) {
 
                 if (module.type === 'chunk') {
-                    module.code = config.banner + module.code + config.footer
+                    module.code = options.banner + module.code + options.footer
                 }
             }
         }

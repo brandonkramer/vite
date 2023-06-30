@@ -1,12 +1,12 @@
 import * as esbuild from "esbuild";
 
-interface Core {
+interface WPStrapViteConfigCore {
     root: string;
     isDev: boolean;
     outDir: string;
 }
 
-interface ServerOptions {
+interface WPStrapViteConfigServerOptions {
     host: string;
     port: number;
     watch: {
@@ -14,17 +14,17 @@ interface ServerOptions {
     };
 }
 
-interface CSSOptions {
+interface WPStrapViteConfigCSSOptions {
     postcss: string;
 }
 
-interface EsbuildOptions {
+interface WPStrapViteConfigEsbuildOptions {
     loader: string;
     include: RegExp;
     exclude: any[]; // Update with appropriate type if possible
 }
 
-interface OptimizeDepsOptions {
+interface WPStrapViteConfigOptimizeDepsOptions {
     esbuildOptions: {
         loader: {
             [key: string]: string;
@@ -32,7 +32,7 @@ interface OptimizeDepsOptions {
     };
 }
 
-interface RollupOptions {
+interface WPStrapViteConfigRollupOptions {
     output: {
         entryFileNames: (assetInfo: any) => string;
         assetFileNames: (assetInfo: any) => string;
@@ -40,11 +40,12 @@ interface RollupOptions {
 }
 
 /**
- * A base config that can be overwritten on the project level
+ * A base ViteJS config for WordPress projects that can be
+ * overwritten on the project level
  *
  * @param core
  */
-export default (core: Core) => ({
+export default (core: WPStrapViteConfigCore) => ({
     /* Shared options */
     root: core.root,
 
@@ -55,24 +56,24 @@ export default (core: Core) => ({
         watch: {
             usePolling: true
         }
-    } as ServerOptions,
+    } as WPStrapViteConfigServerOptions,
 
     /* CSS Options */
     css: {
-        postcss: './.dev/postcss.config.js'
-    } as CSSOptions,
+        postcss: './postcss.config.js'
+    } as WPStrapViteConfigCSSOptions,
 
     /* Esbuild Options */
     esbuild: {
         loader: "jsx",
         include: /\/src\/.*\.js$/,
         exclude: []
-    } as EsbuildOptions,
+    } as WPStrapViteConfigEsbuildOptions,
 
     /* OptimizeDEps Options */
     optimizeDeps: {
         esbuildOptions: {loader: {".js": "jsx"}},
-    } as OptimizeDepsOptions,
+    } as WPStrapViteConfigOptimizeDepsOptions,
 
     /* Build options */
     build: {
@@ -94,6 +95,6 @@ export default (core: Core) => ({
                         : extType + '/[name].[hash][extname]';
                 },
             },
-        } as RollupOptions,
+        } as WPStrapViteConfigRollupOptions,
     },
 });

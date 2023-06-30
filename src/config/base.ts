@@ -37,7 +37,7 @@ interface WPStrapViteConfigOptimizeDepsOptions {
 }
 
 interface WPStrapViteConfigRollupOptions {
-    input: string|string[],
+    input: string | string[],
     output: {
         entryFileNames: (assetInfo: any) => string;
         assetFileNames: (assetInfo: any) => string;
@@ -91,7 +91,9 @@ export default (core: WPStrapViteConfigCore) => ({
 
         /* RollupJS options */
         rollupOptions: {
-            input: fg.sync(path.resolve(core.dirname, core.root, '../', core.root, '**/', core.entry, 'js/*')),
+            input: 'entry' in core
+                ? fg.sync(path.resolve(core.dirname, core.root, '../', core.root, '**/', core.entry, 'js/*'))
+                : fg.sync(path.resolve(core.dirname, core.root, '*', '*.js')),
             output: {
                 entryFileNames: (assetInfo: any) => 'js/[name].[hash].js',
                 assetFileNames: (assetInfo: any) => {

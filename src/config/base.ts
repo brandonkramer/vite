@@ -91,9 +91,9 @@ export default (core: WPStrapViteConfigCore) => ({
 
         /* RollupJS options */
         rollupOptions: {
-            input: 'entry' in core
-                ? fg.sync(path.resolve(core.dirname, core.root, '../', core.root, '**/', core.entry, 'js/*'))
-                : fg.sync(path.resolve(core.dirname, core.root, '*', '*.js')),
+            input: fg.sync(core.hasOwnProperty('entry')
+                ? path.resolve(core.dirname, core.root, '../', core.root, '**/', core.entry, 'js/*')
+                : path.resolve(core.dirname, core.root, '*', '*.js')),
             output: {
                 entryFileNames: (assetInfo: any) => 'js/[name].[hash].js',
                 assetFileNames: (assetInfo: any) => {

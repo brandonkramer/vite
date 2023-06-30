@@ -1,6 +1,6 @@
 {
   "name": "@wp-strap/vite",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "exports": {
     ".": {
       "import": "./dist/main.mjs",

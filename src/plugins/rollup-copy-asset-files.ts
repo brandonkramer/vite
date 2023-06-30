@@ -21,6 +21,11 @@ const DEFAULT_CONFIG: Config = {
     }
 };
 
+/**
+ * A custom RollUpJS plugin which will emit all our asset files
+ *
+ * @param userConfig
+ */
 export default function (userConfig?: Partial<Config>): PluginOption {
     const config = {
         ...DEFAULT_CONFIG,

@@ -10,6 +10,11 @@ const DEFAULT_CONFIG: Config = {
     footer: '})();'
 };
 
+/**
+ * A custom RollUpJS plugin that encapsulate bundles
+ *
+ * @param userConfig
+ */
 export default function (userConfig?: Partial<Config>): Plugin {
     const config = {
         ...DEFAULT_CONFIG,

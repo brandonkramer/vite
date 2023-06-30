@@ -37,6 +37,7 @@ interface WPStrapViteConfigOptimizeDepsOptions {
 }
 
 interface WPStrapViteConfigRollupOptions {
+    input: string|string[],
     output: {
         entryFileNames: (assetInfo: any) => string;
         assetFileNames: (assetInfo: any) => string;

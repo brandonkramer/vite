@@ -1,6 +1,6 @@
 {
   "name": "@wp-strap/vite",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "exports": {
     ".": {
       "import": "./dist/main.mjs",
@@ -20,9 +20,7 @@
     "build:watch": "tsc && vite build --watch",
     "preview": "vite preview"
   },
-  "dependencies": {
-    "fast-glob": "^3.2.12"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@rollup/plugin-typescript": "^11.1.2",
     "@types/node": "^20.3.2",
@@ -30,6 +28,7 @@
     "rollup-plugin-typescript-paths": "^1.4.0",
     "tslib": "^2.6.0",
     "typescript": "^5.0.2",
-    "vite": "^4.3.9"
+    "vite": "^4.3.9",
+    "fast-glob": "^3.2.12"
   }
 }

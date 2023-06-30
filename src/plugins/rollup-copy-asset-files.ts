@@ -3,7 +3,7 @@ import fg from "fast-glob";
 import path from "path";
 import fs from "fs";
 
-export interface Config {
+export interface RollupCopyAssetFilesConfig {
     dirname: string,
     path: string,
     testRules: {
@@ -11,25 +11,23 @@ export interface Config {
     };
 }
 
-const DEFAULT_CONFIG: Config = {
-    dirname: '',
-    path: '',
-    testRules: {
-        images: /png|jpe?g|svg|gif|tiff|bmp|ico/i,
-        svg: /png|jpe?g|svg|gif|tiff|bmp|ico/i,
-        fonts: /ttf|woff|woff2/i
-    }
-};
-
 /**
  * A custom RollUpJS plugin which will emit all our asset files
  *
- * @param userConfig
+ * @param userRollupCopyAssetFilesConfig
  */
-export default function (userConfig?: Partial<Config>): PluginOption {
+export default function (userRollupCopyAssetFilesConfig?: Partial<RollupCopyAssetFilesConfig>): PluginOption {
     const config = {
-        ...DEFAULT_CONFIG,
-        ...userConfig
+        ...{
+            dirname: '',
+            path: '',
+            testRules: {
+                images: /png|jpe?g|svg|gif|tiff|bmp|ico/i,
+                svg: /png|jpe?g|svg|gif|tiff|bmp|ico/i,
+                fonts: /ttf|woff|woff2/i
+            }
+        },
+        ...userRollupCopyAssetFilesConfig
     };
 
     return {
@@ -61,7 +59,7 @@ export default function (userConfig?: Partial<Config>): PluginOption {
                     }
 
 
-                    if ( config.testRules[type].test(fileExt)) {
+                    if (config.testRules[type].test(fileExt)) {
 
                         this.emitFile({
                             type: 'asset',

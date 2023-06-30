@@ -1,24 +1,22 @@
 import type {Plugin} from 'vite';
 
-export interface Config {
+export interface RollupEncapsulateBundlesConfig {
     banner: string,
     footer: string
 }
 
-const DEFAULT_CONFIG: Config = {
-    banner: '(function(){',
-    footer: '})();'
-};
-
 /**
  * A custom RollUpJS plugin that encapsulate bundles
  *
- * @param userConfig
+ * @param userRollupEncapsulateBundlesConfig
  */
-export default function (userConfig?: Partial<Config>): Plugin {
+export default function (userRollupEncapsulateBundlesConfig?: Partial<RollupEncapsulateBundlesConfig>): Plugin {
     const config = {
-        ...DEFAULT_CONFIG,
-        ...userConfig
+        ...{
+            banner: '(function(){',
+            footer: '})();'
+        },
+        ...userRollupEncapsulateBundlesConfig
     };
     return {
         name: 'rollup-encapsulate-bundles',

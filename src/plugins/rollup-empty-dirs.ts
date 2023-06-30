@@ -2,28 +2,26 @@ import type {PluginOption} from 'vite'
 import path from "path";
 import fs from "fs";
 
-interface Config {
+interface RollupEmptyDirsConfig {
     dirname: string;
     buildPath: string;
     emptyDirs: string[];
 }
 
-const DEFAULT_CONFIG: Config = {
-    dirname: '',
-    buildPath: '',
-    emptyDirs: ['css', 'js', 'svg', 'images', 'fonts'],
-};
-
 /**
  * A custom RollUpJS plugin which will empty our specified build folders
  * before our new bundles get build as replacement to "emptyOutDir"
  *
- * @param userConfig
+ * @param userRollupEmptyDirsConfig
  */
-export default function (userConfig?: Partial<Config>): PluginOption {
+export default function (userRollupEmptyDirsConfig?: Partial<RollupEmptyDirsConfig>): PluginOption {
     const config = {
-        ...DEFAULT_CONFIG,
-        ...userConfig
+        ...{
+            dirname: '',
+            buildPath: '',
+            emptyDirs: ['css', 'js', 'svg', 'images', 'fonts'],
+        },
+        ...userRollupEmptyDirsConfig
     };
 
     return {

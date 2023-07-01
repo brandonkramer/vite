@@ -26,6 +26,7 @@
     "@types/node": "^20.3.2",
     "fast-glob": "^3.2.12",
     "prettier": "^2.8.8",
+    "rollup-plugin-external-globals": "^0.8.0",
     "rollup-plugin-typescript-paths": "^1.4.0",
     "tslib": "^2.6.0",
     "typescript": "^5.0.2",

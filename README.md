@@ -25,14 +25,6 @@ import path from "path";
 
 export default defineConfig(() => ({
 
-    plugins: [
-        /**
-         * Add this custom plugin to automatically recompile the assets and refresh
-         * your browser when editing PHP files.
-         */
-        viteHandleHotUpdate()
-    ],
-
     build: {
 
         rollupOptions: {
@@ -57,6 +49,13 @@ export default defineConfig(() => ({
         },
     },
 
+    plugins: [
+        /**
+         * Add this custom plugin to automatically recompile the assets and refresh
+         * your browser when editing PHP files.
+         */
+        viteHandleHotUpdate()
+    ],
 }));
 ```
 

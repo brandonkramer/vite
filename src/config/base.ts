@@ -71,7 +71,7 @@ export default (core: WPStrapViteConfigCore) => ({
     /* Esbuild Options */
     esbuild: {
         loader: "jsx",
-        include: /\/src\/.*\.js$/,
+        include: new RegExp(`/${core.root.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}/.*\\.js$`),
         exclude: []
     } as WPStrapViteConfigEsbuildOptions,
 

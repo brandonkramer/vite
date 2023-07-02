@@ -99,4 +99,5 @@ export default defineConfig(({command, mode}, core = {
 }));
 ```
 
-You can find a project example here: https://github.com/wp-strap/wp-vite-starter
+
+You can find more info and a project example here: https://github.com/wp-strap/wp-vite-starter

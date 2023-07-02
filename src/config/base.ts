@@ -3,11 +3,13 @@ import fg from "fast-glob";
 import path from "path";
 
 interface WPStrapViteConfigCore {
-    root: string;
     isDev: boolean;
+    root: string;
     entry: string,
     outDir: string;
     dirname: string
+    cssEntries: boolean;
+    cssExtension: string
 }
 
 interface WPStrapViteConfigServerOptions {
@@ -91,9 +93,21 @@ export default (core: WPStrapViteConfigCore) => ({
 
         /* RollupJS options */
         rollupOptions: {
-            input: fg.sync(core.hasOwnProperty('entry')
-                ? path.resolve(core.dirname, core.root, '../', core.root, '**/', core.entry, 'js/*')
-                : path.resolve(core.dirname, core.root, '*', '*.js')),
+            input: (() => {
+                const scripts = fg.sync(
+                    core.hasOwnProperty('entry')
+                        ? path.resolve(core.dirname, core.root, '../', core.root, '**/', core.entry, 'js/*')
+                        : path.resolve(core.dirname, core.root, '*', '*.js')
+                );
+                const styles = fg.sync(
+                    core.hasOwnProperty('entry')
+                        ? path.resolve(core.dirname, core.root, '../', core.root, '**/', core.entry, 'css/*')
+                        : path.resolve(core.dirname, core.root, '*', '*.' + (core.hasOwnProperty('cssExtension') ? core.cssExtension : 'pcss'))
+                );
+                return core.hasOwnProperty('cssEntries') && !core.cssEntries
+                    ? scripts
+                    : [...scripts, ...styles]
+            })(),
             output: {
                 entryFileNames: (assetInfo: any) => 'js/[name].[hash].js',
                 assetFileNames: (assetInfo: any) => {

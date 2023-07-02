@@ -31,12 +31,14 @@ export default defineConfig(() => ({
 
             plugins: [
                 /**
-                 * Add this custom RollUpJS plugin to encapsulate bundles
+                 * Add this custom RollUpJS plugin to encapsulate bundles to prevent mix-up of 
+                 * global variables after minification
                  */
                 rollupEncapsulateBundles(),
 
                 /**
-                 * Add this custom RollUpJS plugin which will emit all our asset files
+                 * Add this custom RollUpJS plugin which will emit all our asset files and make them
+                 * transformable by Vite/Rollup plugins
                  */
                 rollUpCopyAssets(path.resolve(__dirname, '**relative path to root folder**'), {
                     rules: {

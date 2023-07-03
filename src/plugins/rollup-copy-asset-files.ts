@@ -64,7 +64,7 @@ export default function (userPath: string, userOptions?: Partial<RollupCopyAsset
                         const emittedAsset: EmittedAsset = {
                             type: 'asset',
                             fileName: options.hash
-                                ? type + '/' + fileName + getFileHash(file) + '.' + fileExt
+                                ? type + '/' + fileName + '.' + getFileHash(file) + '.' + fileExt
                                 : type + '/' + fileName + '.' + fileExt,
                             source: fs.readFileSync(asset),
                             name: filePath

@@ -22,6 +22,7 @@ interface WPStrapViteConfigServerOptions {
 
 interface WPStrapViteConfigCSSOptions {
     postcss: string;
+    devSourcemap: boolean;
 }
 
 interface WPStrapViteConfigEsbuildOptions {
@@ -67,7 +68,8 @@ export default (core: WPStrapViteConfigCore) => ({
 
     /* CSS Options */
     css: {
-        postcss: './postcss.config.js'
+        postcss: './postcss.config.js',
+        devSourcemap: core.isDev,
     } as WPStrapViteConfigCSSOptions,
 
     /* Esbuild Options */

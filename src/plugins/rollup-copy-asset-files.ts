@@ -1,7 +1,9 @@
 import type {PluginOption} from 'vite'
-import fg from "fast-glob";
+import type {EmittedAsset} from 'rollup';
+import {BinaryLike, createHash} from 'crypto';
 import path from "path";
 import fs from "fs";
+import fg from "fast-glob";
 
 export interface RollupCopyAssetFilesOptions {
     rules: {
@@ -18,6 +20,7 @@ export interface RollupCopyAssetFilesOptions {
 export default function (userPath: string, userOptions?: Partial<RollupCopyAssetFilesOptions>): PluginOption {
     const options = {
         ...{
+            hash: true,
             rules: {
                 images: /png|jpe?g|svg|gif|tiff|bmp|ico/i,
                 svg: /png|jpe?g|svg|gif|tiff|bmp|ico/i,
@@ -30,8 +33,7 @@ export default function (userPath: string, userOptions?: Partial<RollupCopyAsset
     return {
         name: 'rollup-copy-asset-files',
         async buildStart() {
-
-            /** Collect assets */
+            const createFileHash = (file: BinaryLike) => createHash('sha256').update(file).digest('hex').slice(0, 8);
             const collectAssets = (assets: Record<string, string[]> = {}) => {
                 for (const assetFolder of fg.sync(userPath, {onlyFiles: false})) {
                     for (const [asset, test] of Object.entries(options.rules)) {
@@ -45,24 +47,28 @@ export default function (userPath: string, userOptions?: Partial<RollupCopyAsset
                 return assets
             }
 
-            /* Test and emit */
             for (const [type, asset] of Object.entries(collectAssets())) {
                 asset.map((asset) => {
                     const file = asset.split('/' + type + '/')[1];
                     const fileExt = file.split('.')[1];
+                    const fileName = file.replace(fileExt, '');
+                    const filePath = asset.split(userPath + '/')[1];
 
-                    if (fileExt === undefined) {
+                    if (fileExt === '') {
                         return;
                     }
 
 
                     if (options.rules[type].test(fileExt)) {
-
-                        this.emitFile({
+                        const emittedAsset: EmittedAsset = {
                             type: 'asset',
-                            fileName: type + '/' + file,
-                            source: fs.readFileSync(asset)
-                        });
+                            fileName: options.hash
+                                ? type + '/' + fileName + createFileHash(file) + '.' + fileExt
+                                : type + '/' + fileName + '.' + fileExt,
+                            source: fs.readFileSync(asset),
+                            name: filePath
+                        }
+                        this.emitFile(emittedAsset);
                     }
                 })
             }

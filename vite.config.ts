@@ -28,7 +28,7 @@ export default defineConfig({
             formats: ["es", "cjs"],
         },
         rollupOptions: {
-            external: ['fs', 'path', 'fg', 'fast-glob'],
+            external: ['fs', 'path', 'fg', 'fast-glob', 'crypto', 'createHash'],
             plugins: [
                 typescriptPaths({
                     preserveExtensions: true,

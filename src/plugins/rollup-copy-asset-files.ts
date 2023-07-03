@@ -33,8 +33,8 @@ export default function (userPath: string, userOptions?: Partial<RollupCopyAsset
     return {
         name: 'rollup-copy-asset-files',
         async buildStart() {
-            const createFileHash = (file: BinaryLike) => createHash('sha256').update(file).digest('hex').slice(0, 8);
-            const collectAssets = (assets: Record<string, string[]> = {}) => {
+            const getFileHash = (file: BinaryLike) => createHash('sha256').update(file).digest('hex').slice(0, 8);
+            const getAssetFiles = (assets: Record<string, string[]> = {}) => {
                 for (const assetFolder of fg.sync(userPath, {onlyFiles: false})) {
                     for (const [asset, test] of Object.entries(options.rules)) {
                         if (!(asset in assets)) {
@@ -47,11 +47,11 @@ export default function (userPath: string, userOptions?: Partial<RollupCopyAsset
                 return assets
             }
 
-            for (const [type, asset] of Object.entries(collectAssets())) {
+            for (const [type, asset] of Object.entries(getAssetFiles())) {
                 asset.map((asset) => {
                     const file = asset.split('/' + type + '/')[1];
                     const fileExt = file.split('.')[1];
-                    const fileName = file.replace(fileExt, '');
+                    const fileName = file.replace('.' + fileExt, '');
                     const filePath = asset.split(userPath + '/')[1];
 
                     if (fileExt === '') {
@@ -63,7 +63,7 @@ export default function (userPath: string, userOptions?: Partial<RollupCopyAsset
                         const emittedAsset: EmittedAsset = {
                             type: 'asset',
                             fileName: options.hash
-                                ? type + '/' + fileName + createFileHash(file) + '.' + fileExt
+                                ? type + '/' + fileName + getFileHash(file) + '.' + fileExt
                                 : type + '/' + fileName + '.' + fileExt,
                             source: fs.readFileSync(asset),
                             name: filePath

@@ -50,9 +50,10 @@ export default function (userPath: string, userOptions?: Partial<RollupCopyAsset
             for (const [type, asset] of Object.entries(getAssetFiles())) {
                 asset.map((asset) => {
                     const file = asset.split('/' + type + '/')[1];
-                    const fileExt = file.split('.')[1];
-                    const fileName = file.replace('.' + fileExt, '');
                     const filePath = asset.split(userPath + '/')[1];
+                    const fileLastDotIndex = file.lastIndexOf(".");
+                    const fileExt = file.substring(fileLastDotIndex + 1);
+                    const fileName = file.substring(0, fileLastDotIndex);
 
                     if (fileExt === '') {
                         return;

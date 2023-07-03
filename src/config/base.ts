@@ -69,7 +69,7 @@ export default (core: WPStrapViteConfigCore) => ({
     /* CSS Options */
     css: {
         postcss: './postcss.config.js',
-        devSourcemap: core.isDev,
+        devSourcemap: true,
     } as WPStrapViteConfigCSSOptions,
 
     /* Esbuild Options */
@@ -98,13 +98,14 @@ export default (core: WPStrapViteConfigCore) => ({
             input: (() => {
                 const scripts = fg.sync(
                     core.hasOwnProperty('entry')
-                        ? path.resolve(core.dirname, core.root, '../', core.root, '**/', core.entry, 'js/*')
+                        ? path.resolve(core.dirname, core.root, '../', core.root, '**/', core.entry, '*/*.js')
                         : path.resolve(core.dirname, core.root, '*', '*.js')
                 );
+                const styleExt = core.hasOwnProperty('cssExtension') ? core.cssExtension : 'pcss';
                 const styles = fg.sync(
                     core.hasOwnProperty('entry')
-                        ? path.resolve(core.dirname, core.root, '../', core.root, '**/', core.entry, 'css/*')
-                        : path.resolve(core.dirname, core.root, '*', '*.' + (core.hasOwnProperty('cssExtension') ? core.cssExtension : 'pcss'))
+                        ? path.resolve(core.dirname, core.root, '../', core.root, '**/', core.entry, '*/*.' + styleExt)
+                        : path.resolve(core.dirname, core.root, '*', '*.' + styleExt)
                 );
                 return core.hasOwnProperty('cssEntries') && !core.cssEntries
                     ? scripts

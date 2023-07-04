@@ -1,31 +1,31 @@
-import { createHash as b } from "crypto";
-import r from "path";
-import m from "fs";
-import p from "fast-glob";
-function O(t) {
+import { createHash as g } from "crypto";
+import l from "path";
+import d from "fs";
+import u from "fast-glob";
+function k(s) {
   const e = {
     banner: "(function(){",
     footer: "})();",
-    ...t
+    ...s
   };
   return {
     name: "rollup-encapsulate-bundles",
-    generateBundle(s, n) {
-      for (const a of Object.values(n))
-        a.type === "chunk" && (a.code = e.banner + a.code + e.footer);
+    generateBundle(o, r) {
+      for (const i of Object.values(r))
+        i.type === "chunk" && (i.code = e.banner + i.code + e.footer);
     }
   };
 }
-function D(t) {
+function D(s) {
   let e;
-  const s = {
+  const o = {
     hash: !0,
     rules: {
       images: /png|jpe?g|svg|gif|tiff|bmp|ico/i,
       svg: /png|jpe?g|svg|gif|tiff|bmp|ico/i,
       fonts: /ttf|woff|woff2/i
     },
-    ...t
+    ...s
   };
   return {
     name: "rollup-copy-asset-files",
@@ -33,69 +33,69 @@ function D(t) {
      * Hook in to get the resolved configurations
      * @param resolvedConfig
      */
-    configResolved(n) {
-      e = n;
+    configResolved(r) {
+      e = r;
     },
     /**
      * Hook in to emit our asset files
      */
     async buildStart() {
-      const n = (o) => b("sha256").update(o).digest("hex").slice(0, 8), a = (o = {}) => {
-        const l = [
+      const r = (t) => g("sha256").update(t).digest("hex").slice(0, 8), i = (t = {}) => {
+        const a = [
           e.root,
-          ...p.sync(r.resolve(e.root, "**/*"), { onlyDirectories: !0 })
+          ...u.sync(l.resolve(e.root, "**/*"), { onlyDirectories: !0 })
         ];
-        for (const c of l)
-          for (const [i, d] of Object.entries(s.rules))
-            i in o || (o[i] = []), o[i] = [...o[i], ...p.sync(r.resolve(c, i, "**/*"))];
-        return o;
+        for (const c of a)
+          for (const [n, f] of Object.entries(o.rules))
+            n in t || (t[n] = []), t[n] = [...t[n], ...u.sync(l.resolve(c, n, "**/*"))];
+        return t;
       };
-      for (const [o, l] of Object.entries(a()))
-        l.map((c) => {
-          const i = c.split("/" + o + "/")[1], d = c.split(e.root + "/")[1], f = i.lastIndexOf("."), u = i.substring(f + 1), y = i.substring(0, f);
-          if (u !== "" && s.rules[o].test(u)) {
-            const g = {
+      for (const [t, a] of Object.entries(i()))
+        a.map((c) => {
+          const n = c.split("/" + t + "/")[1], f = c.split(e.root + "/")[1], m = n.lastIndexOf("."), p = n.substring(m + 1), y = n.substring(0, m);
+          if (p !== "" && o.rules[t].test(p)) {
+            const b = {
               type: "asset",
-              fileName: s.hash ? o + "/" + y + "." + n(i) + "." + u : o + "/" + y + "." + u,
-              source: m.readFileSync(c),
-              name: d
+              fileName: o.hash ? t + "/" + y + "." + r(n) + "." + p : t + "/" + y + "." + p,
+              source: d.readFileSync(c),
+              name: f
             };
-            this.emitFile(g);
+            this.emitFile(b);
           }
         });
     }
   };
 }
-function k(t) {
+function O(s) {
   const e = {
     dirname: "",
     buildPath: "",
     emptyDirs: ["css", "js", "svg", "images", "fonts"],
-    ...t
+    ...s
   };
   return {
     name: "rollup-empty-dirs",
     async buildStart() {
-      for (const s of e.emptyDirs)
-        await ((n) => {
-          m.existsSync(n) && (m.rmSync(n, { recursive: !0 }), console.log("deleted " + n));
-        })(r.resolve(e.dirname, e.buildPath, s));
+      for (const o of e.emptyDirs)
+        await ((r) => {
+          d.existsSync(r) && (d.rmSync(r, { recursive: !0 }), console.log("deleted " + r));
+        })(l.resolve(e.dirname, e.buildPath, o));
     }
   };
 }
-function E(t) {
+function F(s) {
   const e = {
     path: "*",
-    ...t
+    ...s
   };
   return {
     name: "vite-handle-hot-update",
-    handleHotUpdate({ file: s, server: n }) {
-      s.endsWith(".php") && n.ws.send({ type: "full-reload", path: e.path });
+    handleHotUpdate({ file: o, server: r }) {
+      o.endsWith(".php") && r.ws.send({ type: "full-reload", path: e.path });
     }
   };
 }
-function F(t) {
+function C(s) {
   const e = {
     /* Default options */
     isDev: !1,
@@ -107,11 +107,11 @@ function F(t) {
       entries: !0,
       extension: "pcss"
     },
-    ...t
+    ...s
   };
   return {
     name: "vite-config-base",
-    config: (s, { command: n, mode: a }) => ({
+    config: (o, { command: r, mode: i }) => ({
       /* Shared options */
       root: e.root,
       /* Server Options */
@@ -141,21 +141,21 @@ function F(t) {
       build: {
         manifest: !0,
         target: "es2015",
-        minify: a === "development" ? !1 : "esbuild",
-        sourcemap: a === "development",
+        minify: i === "development" ? !1 : "esbuild",
+        sourcemap: i === "development",
         outDir: "../" + e.outDir,
         commonjsOptions: { transformMixedEsModules: !0 },
         /* RollupJS options */
         rollupOptions: {
           input: (() => {
-            const o = p.sync(typeof e.entry == "string" ? r.resolve(e.dirname, e.root, "../", e.root, "**/", e.entry, "*/*.js") : r.resolve(e.dirname, e.root, "*", "*.js")), l = p.sync(typeof e.entry == "string" ? r.resolve(e.dirname, e.root, "../", e.root, "**/", e.entry, "*/*." + e.css.extension) : r.resolve(e.dirname, e.root, "*", "*." + e.css.extension));
-            return e.css.entries ? [...o, ...l] : o;
+            const t = u.sync(typeof e.entry == "string" ? l.resolve(e.dirname, e.root, "../", e.root, "**/", e.entry, "*/*.js") : l.resolve(e.dirname, e.root, "*", "*.js")), a = u.sync(typeof e.entry == "string" ? l.resolve(e.dirname, e.root, "../", e.root, "**/", e.entry, "*/*." + e.css.extension) : l.resolve(e.dirname, e.root, "*", "*." + e.css.extension));
+            return e.css.entries ? [...t, ...a] : t;
           })(),
           output: {
-            entryFileNames: (o) => "js/[name].[hash].js",
-            assetFileNames: (o) => {
-              let l = o.name.split(".")[1];
-              return /png|jpe?g|svg|gif|tiff|bmp|ico/i.test(l) ? "images/[name][extname]" : l + "/[name].[hash][extname]";
+            entryFileNames: (t) => "js/[name].[hash].js",
+            assetFileNames: (t) => {
+              let a = t.name.split(".")[1];
+              return /png|jpe?g|svg|gif|tiff|bmp|ico/i.test(a) ? "images/[name][extname]" : a + "/[name].[hash][extname]";
             }
           }
         }
@@ -163,10 +163,10 @@ function F(t) {
     })
   };
 }
-function h(t) {
-  return t.replace(/-([a-z])/g, (e, s) => s.toUpperCase());
+function h(s) {
+  return s.replace(/-([a-z])/g, (e, o) => o.toUpperCase());
 }
-function $() {
+function M() {
   return {
     ...{
       jquery: "jQuery",
@@ -225,66 +225,15 @@ function $() {
       "viewport",
       "warning",
       "wordcount"
-    ].map((s) => [`@wordpress/${s}`, `wp.${h(s)}`]))
+    ].map((o) => [`@wordpress/${o}`, `wp.${h(o)}`]))
   };
 }
-const C = (t) => ({
-  /* Shared options */
-  root: t.root,
-  /* Server Options */
-  server: {
-    host: "0.0.0.0",
-    port: 3e3,
-    watch: {
-      usePolling: !0
-    }
-  },
-  /* CSS Options */
-  css: {
-    postcss: "./postcss.config.js",
-    devSourcemap: !0
-  },
-  /* Esbuild Options */
-  esbuild: {
-    loader: "jsx",
-    include: new RegExp(`/${t.root.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}/.*\\.js$`),
-    exclude: []
-  },
-  /* OptimizeDEps Options */
-  optimizeDeps: {
-    esbuildOptions: { loader: { ".js": "jsx" } }
-  },
-  /* Build options */
-  build: {
-    manifest: !0,
-    target: "es2015",
-    minify: t.isDev ? !1 : "esbuild",
-    sourcemap: t.isDev,
-    outDir: "../" + t.outDir,
-    commonjsOptions: { transformMixedEsModules: !0 },
-    /* RollupJS options */
-    rollupOptions: {
-      input: (() => {
-        const e = p.sync(t.hasOwnProperty("entry") ? r.resolve(t.dirname, t.root, "../", t.root, "**/", t.entry, "*/*.js") : r.resolve(t.dirname, t.root, "*", "*.js")), s = t.hasOwnProperty("cssExtension") ? t.cssExtension : "pcss", n = p.sync(t.hasOwnProperty("entry") ? r.resolve(t.dirname, t.root, "../", t.root, "**/", t.entry, "*/*." + s) : r.resolve(t.dirname, t.root, "*", "*." + s));
-        return t.hasOwnProperty("cssEntries") && !t.cssEntries ? e : [...e, ...n];
-      })(),
-      output: {
-        entryFileNames: (e) => "js/[name].[hash].js",
-        assetFileNames: (e) => {
-          let s = e.name.split(".")[1];
-          return /png|jpe?g|svg|gif|tiff|bmp|ico/i.test(s) ? "images/[name][extname]" : s + "/[name].[hash][extname]";
-        }
-      }
-    }
-  }
-});
 export {
-  C as baseConfig,
   h as kebabToCamelCase,
   D as rollUpCopyAssets,
-  k as rollupEmptyDirs,
-  O as rollupEncapsulateBundles,
-  F as viteConfigBase,
-  E as viteHandleHotUpdate,
-  $ as wpGlobals
+  O as rollupEmptyDirs,
+  k as rollupEncapsulateBundles,
+  C as viteConfigBase,
+  F as viteHandleHotUpdate,
+  M as wpGlobals
 };

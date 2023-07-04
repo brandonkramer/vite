@@ -21,9 +21,8 @@ yarn add -D @wp-strap/vite
 Add plugins into your Vite config file.
 ```JS
 import {viteHandleHotUpdate, rollUpCopyAssets, rollupEncapsulateBundles} from '@wp-strap/vite';
-import path from "path";
 
-export default defineConfig(() => ({
+export default defineConfig({
 
     build: {
 
@@ -31,7 +30,7 @@ export default defineConfig(() => ({
 
             plugins: [
                 /**
-                 * Add this custom RollUpJS plugin to encapsulate bundles to prevent mix-up of 
+                 * Add this custom RollUpJS plugin to encapsulate bundles to prevent mix-up of
                  * global variables after minification
                  */
                 rollupEncapsulateBundles(),
@@ -40,7 +39,7 @@ export default defineConfig(() => ({
                  * Add this custom RollUpJS plugin which will emit all our asset files and make them
                  * transformable by Vite/Rollup plugins
                  */
-                rollUpCopyAssets(path.resolve(__dirname, '**relative path to root folder**'), {
+                rollUpCopyAssets({
                     rules: {
                         images: /png|jpe?g|svg|gif|tiff|bmp|ico/i,
                         svg: /png|jpe?g|svg|gif|tiff|bmp|ico/i,
@@ -58,45 +57,30 @@ export default defineConfig(() => ({
          */
         viteHandleHotUpdate()
     ],
-}));
+};
 ```
 
 Or extend an opinionated config for WP development to minimise your configurations.
 ```JS
 import {defineConfig} from 'vite'
 import * as WPStrap from '@wp-strap/vite';
-import path from "path";
 
-export default defineConfig(({command, mode}, core = {
-    isDev: mode === 'development', /* Determines if the task runner is in dev mode */
-    root: 'src',  /* Project root directory */
-    outDir: `build`, /* Folder that contains our processed files */
-    dirname: __dirname
-}) => ({
-    ...WPStrap.baseConfig(core), ...{
+export default defineConfig({
 
-        /* Build Options */
-        build: {
-            ...WPStrap.baseConfig(core).build, ...{
+    /* ViteJS plugins */
+    plugins: [WPStrap.viteConfigBase()], // <------
 
-                /* RollupJS Options */
-                rollupOptions: {
-                    ...WPStrap.baseConfig(core).build.rollupOptions, ...{
+    /* Build options */
+    build: {
 
-                        /* RollupJS plugins */
-                        plugins: [
-                            WPStrap.rollupEncapsulateBundles(),
-                            WPStrap.rollUpCopyAssets(path.resolve(core.dirname, core.root)),
-                        ],
-                    }
-                },
-            }
+        /* RollupJS options */
+        rollupOptions: {
+
+            /* RollupJS plugins */
+            plugins: [WPStrap.rollupEncapsulateBundles(), WPStrap.rollUpCopyAssets()],
         },
-
-        /* ViteJS plugins */
-        plugins: [WPStrap.viteHandleHotUpdate()],
-    }
-}));
+    },
+});
 ```
 
 

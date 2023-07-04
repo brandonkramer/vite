@@ -21,6 +21,9 @@ interface ViteConfigBaseOptions {
         /* CSS file extension to look for entries */
         extension: string;
     },
+    server: {
+
+    }
 }
 
 
@@ -43,6 +46,13 @@ export default function createViteConfig(userOptions?: Partial<ViteConfigBaseOpt
             css: {
                 entries: true,
                 extension: 'pcss',
+            },
+            server: {
+                host: '0.0.0.0',
+                port: 3000,
+                watch: {
+                    usePolling: true
+                }
             }
         },
         ...userOptions
@@ -55,13 +65,7 @@ export default function createViteConfig(userOptions?: Partial<ViteConfigBaseOpt
             root: options.root,
 
             /* Server Options */
-            server: {
-                host: '0.0.0.0',
-                port: 3000,
-                watch: {
-                    usePolling: true
-                }
-            },
+            server: options.server,
             /* CSS Options */
             css: {
                 postcss: './postcss.config.js',
@@ -117,6 +121,11 @@ export default function createViteConfig(userOptions?: Partial<ViteConfigBaseOpt
                     },
                 }
             }
-        })
+        }),
+        handleHotUpdate({file, server}) {
+            if (file.endsWith(".php")) {
+                server.ws.send({type: 'full-reload', path: "*"});
+            }
+        }
     };
 }

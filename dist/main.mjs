@@ -1,8 +1,8 @@
 import { createHash as b } from "crypto";
 import r from "path";
 import m from "fs";
-import l from "fast-glob";
-function D(t) {
+import p from "fast-glob";
+function O(t) {
   const e = {
     banner: "(function(){",
     footer: "})();",
@@ -10,13 +10,13 @@ function D(t) {
   };
   return {
     name: "rollup-encapsulate-bundles",
-    generateBundle(s, o) {
-      for (const i of Object.values(o))
-        i.type === "chunk" && (i.code = e.banner + i.code + e.footer);
+    generateBundle(s, n) {
+      for (const a of Object.values(n))
+        a.type === "chunk" && (a.code = e.banner + a.code + e.footer);
     }
   };
 }
-function O(t) {
+function D(t) {
   let e;
   const s = {
     hash: !0,
@@ -33,31 +33,31 @@ function O(t) {
      * Hook in to get the resolved configurations
      * @param resolvedConfig
      */
-    configResolved(o) {
-      e = o;
+    configResolved(n) {
+      e = n;
     },
     /**
      * Hook in to emit our asset files
      */
     async buildStart() {
-      const o = (n) => b("sha256").update(n).digest("hex").slice(0, 8), i = (n = {}) => {
-        const c = [
+      const n = (o) => b("sha256").update(o).digest("hex").slice(0, 8), a = (o = {}) => {
+        const l = [
           e.root,
-          ...l.sync(r.resolve(e.root, "**/*"), { onlyDirectories: !0 })
+          ...p.sync(r.resolve(e.root, "**/*"), { onlyDirectories: !0 })
         ];
-        for (const p of c)
-          for (const [a, d] of Object.entries(s.rules))
-            a in n || (n[a] = []), n[a] = [...n[a], ...l.sync(r.resolve(p, a, "**/*"))];
-        return n;
+        for (const c of l)
+          for (const [i, d] of Object.entries(s.rules))
+            i in o || (o[i] = []), o[i] = [...o[i], ...p.sync(r.resolve(c, i, "**/*"))];
+        return o;
       };
-      for (const [n, c] of Object.entries(i()))
-        c.map((p) => {
-          const a = p.split("/" + n + "/")[1], d = p.split(e.root + "/")[1], f = a.lastIndexOf("."), u = a.substring(f + 1), y = a.substring(0, f);
-          if (u !== "" && s.rules[n].test(u)) {
+      for (const [o, l] of Object.entries(a()))
+        l.map((c) => {
+          const i = c.split("/" + o + "/")[1], d = c.split(e.root + "/")[1], f = i.lastIndexOf("."), u = i.substring(f + 1), y = i.substring(0, f);
+          if (u !== "" && s.rules[o].test(u)) {
             const g = {
               type: "asset",
-              fileName: s.hash ? n + "/" + y + "." + o(a) + "." + u : n + "/" + y + "." + u,
-              source: m.readFileSync(p),
+              fileName: s.hash ? o + "/" + y + "." + n(i) + "." + u : o + "/" + y + "." + u,
+              source: m.readFileSync(c),
               name: d
             };
             this.emitFile(g);
@@ -77,8 +77,8 @@ function k(t) {
     name: "rollup-empty-dirs",
     async buildStart() {
       for (const s of e.emptyDirs)
-        await ((o) => {
-          m.existsSync(o) && (m.rmSync(o, { recursive: !0 }), console.log("deleted " + o));
+        await ((n) => {
+          m.existsSync(n) && (m.rmSync(n, { recursive: !0 }), console.log("deleted " + n));
         })(r.resolve(e.dirname, e.buildPath, s));
     }
   };
@@ -90,8 +90,8 @@ function E(t) {
   };
   return {
     name: "vite-handle-hot-update",
-    handleHotUpdate({ file: s, server: o }) {
-      s.endsWith(".php") && o.ws.send({ type: "full-reload", path: e.path });
+    handleHotUpdate({ file: s, server: n }) {
+      s.endsWith(".php") && n.ws.send({ type: "full-reload", path: e.path });
     }
   };
 }
@@ -102,73 +102,71 @@ function F(t) {
     root: "src",
     outDir: "build",
     entry: !1,
-    dirname: "",
+    dirname: process.cwd(),
     css: {
       entries: !0,
       extension: "pcss"
     },
     ...t
-  }, s = {
-    /* Shared options */
-    root: e.root,
-    /* Server Options */
-    server: {
-      host: "0.0.0.0",
-      port: 3e3,
-      watch: {
-        usePolling: !0
-      }
-    },
-    /* CSS Options */
-    css: {
-      postcss: "./postcss.config.js",
-      devSourcemap: !0
-    },
-    /* Esbuild Options */
-    esbuild: {
-      loader: "jsx",
-      include: new RegExp(`/${e.root.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}/.*\\.js$`),
-      exclude: []
-    },
-    /* OptimizeDEps Options */
-    optimizeDeps: {
-      esbuildOptions: { loader: { ".js": "jsx" } }
-    },
-    /* Build options */
-    build: {
-      manifest: !0,
-      target: "es2015",
-      minify: e.isDev ? !1 : "esbuild",
-      sourcemap: e.isDev,
-      outDir: "../" + e.outDir,
-      commonjsOptions: { transformMixedEsModules: !0 },
-      /* RollupJS options */
-      rollupOptions: {
-        input: (() => {
-          const o = l.sync(typeof e.entry == "string" ? r.resolve(e.dirname, e.root, "../", e.root, "**/", e.entry, "*/*.js") : r.resolve(e.dirname, e.root, "*", "*.js")), i = l.sync(typeof e.entry == "string" ? r.resolve(e.dirname, e.root, "../", e.root, "**/", e.entry, "*/*." + e.css.extension) : r.resolve(e.dirname, e.root, "*", "*." + e.css.extension));
-          return e.css.entries ? [...o, ...i] : o;
-        })(),
-        output: {
-          entryFileNames: (o) => "js/[name].[hash].js",
-          assetFileNames: (o) => {
-            let i = o.name.split(".")[1];
-            return /png|jpe?g|svg|gif|tiff|bmp|ico/i.test(i) ? "images/[name][extname]" : i + "/[name].[hash][extname]";
-          }
-        }
-      }
-    }
   };
   return {
     name: "vite-config-base",
-    config() {
-      return s;
-    }
+    config: (s, { command: n, mode: a }) => ({
+      /* Shared options */
+      root: e.root,
+      /* Server Options */
+      server: {
+        host: "0.0.0.0",
+        port: 3e3,
+        watch: {
+          usePolling: !0
+        }
+      },
+      /* CSS Options */
+      css: {
+        postcss: "./postcss.config.js",
+        devSourcemap: !0
+      },
+      /* Esbuild Options */
+      esbuild: {
+        loader: "jsx",
+        include: new RegExp(`/${e.root.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}/.*\\.js$`),
+        exclude: []
+      },
+      /* OptimizeDEps Options */
+      optimizeDeps: {
+        esbuildOptions: { loader: { ".js": "jsx" } }
+      },
+      /* Build options */
+      build: {
+        manifest: !0,
+        target: "es2015",
+        minify: a === "development" ? !1 : "esbuild",
+        sourcemap: a === "development",
+        outDir: "../" + e.outDir,
+        commonjsOptions: { transformMixedEsModules: !0 },
+        /* RollupJS options */
+        rollupOptions: {
+          input: (() => {
+            const o = p.sync(typeof e.entry == "string" ? r.resolve(e.dirname, e.root, "../", e.root, "**/", e.entry, "*/*.js") : r.resolve(e.dirname, e.root, "*", "*.js")), l = p.sync(typeof e.entry == "string" ? r.resolve(e.dirname, e.root, "../", e.root, "**/", e.entry, "*/*." + e.css.extension) : r.resolve(e.dirname, e.root, "*", "*." + e.css.extension));
+            return e.css.entries ? [...o, ...l] : o;
+          })(),
+          output: {
+            entryFileNames: (o) => "js/[name].[hash].js",
+            assetFileNames: (o) => {
+              let l = o.name.split(".")[1];
+              return /png|jpe?g|svg|gif|tiff|bmp|ico/i.test(l) ? "images/[name][extname]" : l + "/[name].[hash][extname]";
+            }
+          }
+        }
+      }
+    })
   };
 }
 function h(t) {
   return t.replace(/-([a-z])/g, (e, s) => s.toUpperCase());
 }
-function C() {
+function $() {
   return {
     ...{
       jquery: "jQuery",
@@ -230,7 +228,7 @@ function C() {
     ].map((s) => [`@wordpress/${s}`, `wp.${h(s)}`]))
   };
 }
-const $ = (t) => ({
+const C = (t) => ({
   /* Shared options */
   root: t.root,
   /* Server Options */
@@ -267,8 +265,8 @@ const $ = (t) => ({
     /* RollupJS options */
     rollupOptions: {
       input: (() => {
-        const e = l.sync(t.hasOwnProperty("entry") ? r.resolve(t.dirname, t.root, "../", t.root, "**/", t.entry, "*/*.js") : r.resolve(t.dirname, t.root, "*", "*.js")), s = t.hasOwnProperty("cssExtension") ? t.cssExtension : "pcss", o = l.sync(t.hasOwnProperty("entry") ? r.resolve(t.dirname, t.root, "../", t.root, "**/", t.entry, "*/*." + s) : r.resolve(t.dirname, t.root, "*", "*." + s));
-        return t.hasOwnProperty("cssEntries") && !t.cssEntries ? e : [...e, ...o];
+        const e = p.sync(t.hasOwnProperty("entry") ? r.resolve(t.dirname, t.root, "../", t.root, "**/", t.entry, "*/*.js") : r.resolve(t.dirname, t.root, "*", "*.js")), s = t.hasOwnProperty("cssExtension") ? t.cssExtension : "pcss", n = p.sync(t.hasOwnProperty("entry") ? r.resolve(t.dirname, t.root, "../", t.root, "**/", t.entry, "*/*." + s) : r.resolve(t.dirname, t.root, "*", "*." + s));
+        return t.hasOwnProperty("cssEntries") && !t.cssEntries ? e : [...e, ...n];
       })(),
       output: {
         entryFileNames: (e) => "js/[name].[hash].js",
@@ -281,12 +279,12 @@ const $ = (t) => ({
   }
 });
 export {
-  $ as baseConfig,
+  C as baseConfig,
   h as kebabToCamelCase,
-  O as rollUpCopyAssets,
+  D as rollUpCopyAssets,
   k as rollupEmptyDirs,
-  D as rollupEncapsulateBundles,
+  O as rollupEncapsulateBundles,
   F as viteConfigBase,
   E as viteHandleHotUpdate,
-  C as wpGlobals
+  $ as wpGlobals
 };

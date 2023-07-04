@@ -13,7 +13,7 @@ interface ViteConfigBaseOptions {
     /* Folder that contains our processed files */
     outDir: string,
     /* Entry folder from out the root */
-    entry: boolean|string,
+    entry: boolean | string,
     /* CSS config */
     css: {
         /* Determines if we want to include CSS as entries */
@@ -31,6 +31,7 @@ interface ViteConfigBaseOptions {
  * @param userOptions
  */
 export default function createViteConfig(userOptions?: Partial<ViteConfigBaseOptions>): Plugin {
+
     const options: ViteConfigBaseOptions = {
         ...{
             /* Default options */
@@ -38,7 +39,7 @@ export default function createViteConfig(userOptions?: Partial<ViteConfigBaseOpt
             root: 'src',
             outDir: `build`,
             entry: false,
-            dirname: '',
+            dirname: process.cwd(),
             css: {
                 entries: true,
                 extension: 'pcss',
@@ -47,79 +48,75 @@ export default function createViteConfig(userOptions?: Partial<ViteConfigBaseOpt
         ...userOptions
     };
 
-    const viteConfig: UserConfig = {
-        /* Shared options */
-        root: options.root,
-
-        /* Server Options */
-        server: {
-            host: '0.0.0.0',
-            port: 3000,
-            watch: {
-                usePolling: true
-            }
-        },
-        /* CSS Options */
-        css: {
-            postcss: './postcss.config.js',
-            devSourcemap: true,
-        },
-
-        /* Esbuild Options */
-        esbuild: {
-            loader: "jsx",
-            include: new RegExp(`/${options.root.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}/.*\\.js$`),
-            exclude: []
-        },
-
-        /* OptimizeDEps Options */
-        optimizeDeps: {
-            esbuildOptions: {loader: {".js": "jsx"}},
-        },
-
-        /* Build options */
-        build: {
-            manifest: true,
-            target: 'es2015',
-            minify: options.isDev ? false : 'esbuild',
-            sourcemap: options.isDev,
-            outDir: `../` + options.outDir,
-            commonjsOptions: {transformMixedEsModules: true},
-
-            /* RollupJS options */
-            rollupOptions: {
-                input: (() => {
-                    const scripts = fg.sync(
-                        typeof  options.entry === 'string'
-                            ? path.resolve(options.dirname, options.root, '../', options.root, '**/', options.entry, '*/*.js')
-                            : path.resolve(options.dirname, options.root, '*', '*.js')
-                    );
-                    const styles = fg.sync(
-                        typeof  options.entry === 'string'
-                            ? path.resolve(options.dirname, options.root, '../', options.root, '**/', options.entry, '*/*.' + options.css.extension)
-                            : path.resolve(options.dirname, options.root, '*', '*.' + options.css.extension)
-                    );
-                    return !options.css.entries
-                        ? scripts
-                        : [...scripts, ...styles];
-                })(),
-                output: {
-                    entryFileNames: (assetInfo: any) => 'js/[name].[hash].js',
-                    assetFileNames: (assetInfo: any) => {
-                        let extType = assetInfo.name.split('.')[1];
-                        return /png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)
-                            ? 'images/[name][extname]'
-                            : extType + '/[name].[hash][extname]';
-                    },
-                },
-            }
-        }
-    };
-
     return {
         name: "vite-config-base",
-        config() {
-            return viteConfig;
-        }
+        config: (config, {command, mode}) => ({
+            /* Shared options */
+            root: options.root,
+
+            /* Server Options */
+            server: {
+                host: '0.0.0.0',
+                port: 3000,
+                watch: {
+                    usePolling: true
+                }
+            },
+            /* CSS Options */
+            css: {
+                postcss: './postcss.config.js',
+                devSourcemap: true,
+            },
+
+            /* Esbuild Options */
+            esbuild: {
+                loader: "jsx",
+                include: new RegExp(`/${options.root.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}/.*\\.js$`),
+                exclude: []
+            },
+
+            /* OptimizeDEps Options */
+            optimizeDeps: {
+                esbuildOptions: {loader: {".js": "jsx"}},
+            },
+
+            /* Build options */
+            build: {
+                manifest: true,
+                target: 'es2015',
+                minify: mode === 'development' ? false : 'esbuild',
+                sourcemap: mode === 'development',
+                outDir: `../` + options.outDir,
+                commonjsOptions: {transformMixedEsModules: true},
+
+                /* RollupJS options */
+                rollupOptions: {
+                    input: (() => {
+                        const scripts = fg.sync(
+                            typeof options.entry === 'string'
+                                ? path.resolve(options.dirname, options.root, '../', options.root, '**/', options.entry, '*/*.js')
+                                : path.resolve(options.dirname, options.root, '*', '*.js')
+                        );
+                        const styles = fg.sync(
+                            typeof options.entry === 'string'
+                                ? path.resolve(options.dirname, options.root, '../', options.root, '**/', options.entry, '*/*.' + options.css.extension)
+                                : path.resolve(options.dirname, options.root, '*', '*.' + options.css.extension)
+                        );
+                        return !options.css.entries
+                            ? scripts
+                            : [...scripts, ...styles];
+                    })(),
+                    output: {
+                        entryFileNames: (assetInfo: any) => 'js/[name].[hash].js',
+                        assetFileNames: (assetInfo: any) => {
+                            let extType = assetInfo.name.split('.')[1];
+                            return /png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)
+                                ? 'images/[name][extname]'
+                                : extType + '/[name].[hash][extname]';
+                        },
+                    },
+                }
+            }
+        })
     };
 }

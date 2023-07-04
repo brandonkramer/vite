@@ -16,7 +16,7 @@ export default function (userOptions?: Partial<ViteHandleHotUpdateOptions>): Plu
         ...userOptions
     };
     return {
-        name: "php",
+        name: "vite-handle-hot-update",
         handleHotUpdate({file, server}) {
             if (file.endsWith(".php")) {
                 server.ws.send({type: 'full-reload', path: options.path});

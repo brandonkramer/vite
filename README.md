@@ -39,13 +39,7 @@ export default defineConfig({
                  * Add this custom RollUpJS plugin which will emit all our asset files and make them
                  * transformable by Vite/Rollup plugins
                  */
-                rollUpCopyAssets({
-                    rules: {
-                        images: /png|jpe?g|svg|gif|tiff|bmp|ico/i,
-                        svg: /png|jpe?g|svg|gif|tiff|bmp|ico/i,
-                        fonts: /ttf|woff|woff2/i
-                    }
-                }),
+                rollUpCopyAssets(),
             ],
         },
     },
@@ -83,5 +77,27 @@ export default defineConfig({
 });
 ```
 
+### rollupCopyAssets
+
+With the `WPStrap.rollUpCopyAssets` userOptions param you're able to add additional asset folders by adding additional test rules aside to images/svg/fonts, and you can customize the default ones as well:
+```js
+WPStrap.rollUpCopyAssets({
+    rules: {
+        images: /png|jpe?g|svg|gif|tiff|bmp|ico/i,
+        svg: /png|jpe?g|svg|gif|tiff|bmp|ico/i,
+        fonts: /ttf|woff|woff2/i
+    }
+})
+```
+### rollupEncapsulateBundles
+You can customize the way it encapsulates bundles by using the userOptions param in `WPStrap.rollupEncapsulateBundles`:
+```js
+WPStrap.rollupEncapsulateBundles({
+    banner: '/*My Custom Project*/(function(){', // Adds a comment before each bundle
+    footer: '})();'
+})
+```
+
+----
 
 You can find more info and a project example here: https://github.com/wp-strap/wp-vite-starter

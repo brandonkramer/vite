@@ -1,5 +1,5 @@
 # procssed files
-build/*
+dist/*
 
 # composer
 vendor

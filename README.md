@@ -4,7 +4,7 @@
   </a>
   <h1>Vite</h1>
   <p>
-A collection of front-end utilities for WordPress development with ViteJS.
+A library of front-end utilities for WordPress development with ViteJS.
 
 You can read more about ViteJS on [vitejs.dev](https://vitejs.dev)
 </p>
@@ -20,81 +20,82 @@ yarn add -D @wp-strap/vite
 
 Add plugins into your Vite config file.
 ```JS
-import {viteHandleHotUpdate, rollUpCopyAssets, rollupEncapsulateBundles} from '@wp-strap/vite';
+import {viteHandleHotUpdate, viteCopyAssetFiles, viteEncapsulateBundles} from '@wp-strap/vite';
 
 export default defineConfig({
-
-    build: {
-
-        rollupOptions: {
-
-            plugins: [
-                /**
-                 * Add this custom RollUpJS plugin to encapsulate bundles to prevent mix-up of
-                 * global variables after minification
-                 */
-                rollupEncapsulateBundles(),
-
-                /**
-                 * Add this custom RollUpJS plugin which will emit all our asset files and make them
-                 * transformable by Vite/Rollup plugins
-                 */
-                rollUpCopyAssets(),
-            ],
-        },
-    },
-
+    
     plugins: [
+        
+        /**
+         * Add this custom RollUpJS plugin to encapsulate bundles to prevent mix-up of
+         * global variables after minification
+         */
+        viteEncapsulateBundles(),
+
+        /**
+         * Add this custom RollUpJS plugin which will emit all our asset files and make them
+         * transformable by Vite/vite plugins
+         */
+        viteCopyAssetFiles(),
+        
         /**
          * Add this custom plugin to automatically recompile the assets and refresh
          * your browser when editing PHP files.
          */
         viteHandleHotUpdate()
     ],
-};
-```
-
-Or extend an opinionated config for WP development to minimise your configurations.
-```JS
-import {defineConfig} from 'vite'
-import * as WPStrap from '@wp-strap/vite';
-
-export default defineConfig({
-
-    /* ViteJS plugins */
-    plugins: [WPStrap.viteConfigBase()], // <------
-
-    /* Build options */
-    build: {
-
-        /* RollupJS options */
-        rollupOptions: {
-
-            /* RollupJS plugins */
-            plugins: [WPStrap.rollupEncapsulateBundles(), WPStrap.rollUpCopyAssets()],
-        },
-    },
 });
 ```
 
-### rollupCopyAssets
+Or extend an opinionated config that includes these plugins and other (overwrite-able) configurations for WP development. 
+```JS
+import {viteWPConfig} from '@wp-strap/vite';
 
-With the `WPStrap.rollUpCopyAssets` userOptions param you're able to add additional asset folders by adding additional test rules aside to images/svg/fonts, and you can customize the default ones as well:
+export default defineConfig({
+
+    plugins: [viteWPConfig()], 
+});
+```
+
+### viteCopyAssetFiles
+
+With the `viteCopyAssetFiles` userOptions param you're able to add additional asset folders by adding additional test rules aside to images/svg/fonts, and you can customize the default ones as well:
 ```js
-WPStrap.rollUpCopyAssets({
+viteCopyAssetFiles({
     rules: {
         images: /png|jpe?g|svg|gif|tiff|bmp|ico/i,
         svg: /png|jpe?g|svg|gif|tiff|bmp|ico/i,
         fonts: /ttf|woff|woff2/i
     }
 })
+
+// or 
+
+viteWPConfig({
+    assets: {
+        rules: {
+            images: /png|jpe?g|svg|gif|tiff|bmp|ico/i,
+            svg: /png|jpe?g|svg|gif|tiff|bmp|ico/i,
+            fonts: /ttf|woff|woff2/i
+        }
+    }
+})
 ```
-### rollupEncapsulateBundles
-You can customize the way it encapsulates bundles by using the userOptions param in `WPStrap.rollupEncapsulateBundles`:
+### viteEncapsulateBundles
+You can customize the way it encapsulates bundles by using the userOptions param in `viteEncapsulateBundles`:
 ```js
-WPStrap.rollupEncapsulateBundles({
+viteEncapsulateBundles({
     banner: '/*My Custom Project*/(function(){', // Adds a comment before each bundle
     footer: '})();'
+})
+
+// or
+
+viteWPConfig({
+    bundles: {
+        banner: '/*My Custom Project*/(function(){', // Adds a comment before each bundle
+        footer: '})();'
+    }
 })
 ```
 

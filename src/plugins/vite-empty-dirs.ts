@@ -2,19 +2,23 @@ import type {PluginOption} from 'vite'
 import path from "path";
 import fs from "fs";
 
-interface RollupEmptyDirsOptions {
+interface ViteEmptyDirsOptions {
     dirname: string;
     buildPath: string;
     emptyDirs: string[];
 }
 
 /**
- * A custom RollUpJS plugin which will empty our specified build folders
+ * A custom ViteJS plugin which will empty our specified build folders
  * before our new bundles get build as replacement to "emptyOutDir"
  *
  * @param userOptions
  */
-export default function (userOptions?: Partial<RollupEmptyDirsOptions>): PluginOption {
+export default function (userOptions?: Partial<ViteEmptyDirsOptions>): PluginOption {
+
+    /**
+     * Core plugin options
+     */
     const options = {
         ...{
             dirname: '',
@@ -24,8 +28,19 @@ export default function (userOptions?: Partial<RollupEmptyDirsOptions>): PluginO
         ...userOptions
     };
 
+    /**
+     * Plugin hooks
+     */
     return {
-        name: 'rollup-empty-dirs',
+
+        /**
+         * Plugin name
+         */
+        name: 'vite-empty-dirs',
+
+        /**
+         * Plugin hook
+         */
         async buildStart() {
             for (const dir of options.emptyDirs) {
                 await ((dirPath) => {

@@ -5,7 +5,7 @@ import path from "path";
 import fs from "fs";
 import fg from "fast-glob";
 
-export interface RollupCopyAssetFilesOptions {
+export interface ViteCopyAssetFilesOptions {
     hash: boolean,
     rules: {
         [key: string]: RegExp;
@@ -13,12 +13,15 @@ export interface RollupCopyAssetFilesOptions {
 }
 
 /**
- * A custom RollUpJS plugin which will emit all our asset files
+ * A custom ViteJS plugin which will emit all our asset files
  *
  * @param userOptions
  */
-export default function ( userOptions?: Partial<RollupCopyAssetFilesOptions>): PluginOption {
-   let ViteConfig: ResolvedConfig;
+export default function ( userOptions?: Partial<ViteCopyAssetFilesOptions>): PluginOption {
+
+    /**
+     * Core plugin options
+     */
     const options = {
         ...{
             hash: true,
@@ -31,8 +34,20 @@ export default function ( userOptions?: Partial<RollupCopyAssetFilesOptions>): P
         ...userOptions
     };
 
+    /**
+     * Will be used to collect the resolved configurations
+     */
+    let ViteConfig: ResolvedConfig;
+
+    /**
+     * Plugin hooks
+     */
     return {
-        name: 'rollup-copy-asset-files',
+
+        /**
+         * Plugin name
+         */
+        name: 'vite-copy-asset-files',
 
         /**
          * Hook in to get the resolved configurations
@@ -76,6 +91,7 @@ export default function ( userOptions?: Partial<RollupCopyAssetFilesOptions>): P
              * Loop the asset files and emit the ones we want
              */
             for (const [type, asset] of Object.entries(getAssetFiles())) {
+
                 asset.map((asset) => {
                     const file = asset.split('/' + type + '/')[1];
                     const filePath = asset.split(ViteConfig.root + '/')[1];
@@ -86,7 +102,6 @@ export default function ( userOptions?: Partial<RollupCopyAssetFilesOptions>): P
                     if (fileExt === '') {
                         return;
                     }
-
 
                     if (options.rules[type].test(fileExt)) {
                         const emittedAsset: EmittedAsset = {

@@ -1,16 +1,20 @@
 import type {Plugin} from 'vite';
 
-export interface RollupEncapsulateBundlesOptions {
+export interface ViteEncapsulateBundlesOptions {
     banner: string,
     footer: string
 }
 
 /**
- * A custom RollUpJS plugin that encapsulate bundles
+ * A custom ViteJS plugin that encapsulate bundles
  *
  * @param userOptions
  */
-export default function (userOptions?: Partial<RollupEncapsulateBundlesOptions>): Plugin {
+export default function (userOptions?: Partial<ViteEncapsulateBundlesOptions>): Plugin {
+
+    /**
+     * Core plugin options
+     */
     const options = {
         ...{
             banner: '(function(){',
@@ -18,8 +22,23 @@ export default function (userOptions?: Partial<RollupEncapsulateBundlesOptions>)
         },
         ...userOptions
     };
+
+    /**
+     * Plugin hooks
+     */
     return {
-        name: 'rollup-encapsulate-bundles',
+
+        /**
+         * Plugin name
+         */
+        name: 'vite-encapsulate-bundles',
+
+        /**
+         * Generate bundle hook
+         *
+         * @param bundleOptions
+         * @param bundle
+         */
         generateBundle(bundleOptions, bundle) {
 
             for (const module of Object.values(bundle)) {

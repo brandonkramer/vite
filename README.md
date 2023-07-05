@@ -57,6 +57,20 @@ export default defineConfig({
 });
 ```
 
+### viteWPConfig 
+
+The plugin ensures the following:
+
+- Updates/refreshes the dev server (HMR/Hot Module Replacement) when a change is made inside PHP files
+- Encapsulates JS bundles to prevent mix-up of global variables (with other plugins/themes) after minification
+- Collects images, SVG and font files from folders and emits them to make them transformable by plugins
+- Esbuild is configured to make ReactJS code work inside `.js` files instead of the default `.jsx`
+- Esbuild for minification which is turned off for `development` mode
+- Esbuild sourcemaps are added for `development` mode
+- JS entries are automatically included from first-level folders inside the `src` folder using fast-glob (e.g., js/my-script.js, blocks/my-block.js).
+- CSS entries are also automatically included in the same way, bundled and compiled without importing them into JS files which is more suitable for WordPress projects.
+
+
 ### viteCopyAssetFiles
 
 With the `viteCopyAssetFiles` userOptions param you're able to add additional asset folders by adding additional test rules aside to images/svg/fonts, and you can customize the default ones as well:
